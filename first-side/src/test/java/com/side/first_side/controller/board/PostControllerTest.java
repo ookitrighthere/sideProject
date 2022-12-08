@@ -1,8 +1,10 @@
 package com.side.first_side.controller.board;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -131,6 +133,7 @@ class PostControllerTest {
 					    .title("글 1개 조회 테스트")
 					    .content("글 1개 조회하기")
 					    .build();
+		postRepository.save(post);
 		//expected
 		mockMvc.perform(get("/posts/{postId}", post.getId())
 						.contentType(APPLICATION_JSON))
@@ -138,5 +141,33 @@ class PostControllerTest {
 				.andExpect(jsonPath("$.title").value("글 1개 조회 테스트"))
 				.andExpect(jsonPath("$.content").value("글 1개 조회하기"))
 				.andDo(print());
+	}
+
+	@Test
+	@DisplayName("글 여러개 조회")
+	void test6() throws Exception {
+		//given
+		Post post1 = Post.builder()
+					    .title("첫번째")
+					    .content("첫번째 글")
+					    .build();
+		postRepository.save(post1);
+
+
+		Post post2 = Post.builder()
+				.title("두번째")
+				.content("두번째 글")
+				.build();
+		postRepository.save(post2);
+
+		//expected
+		mockMvc.perform(get("/posts")
+						.contentType(APPLICATION_JSON))
+			   .andExpect(status().isOk())
+			   .andExpect(jsonPath("$.length()",is(2)))
+			   .andExpect(jsonPath("$[0].title").value("첫번째"))
+			   .andExpect(jsonPath("$[0].content").value("첫번째 글"))
+			   .andExpect(jsonPath("$[1].title").value("두번째"))
+			   .andExpect(jsonPath("$[1].content").value("두번째 글"));
 	}
 }
