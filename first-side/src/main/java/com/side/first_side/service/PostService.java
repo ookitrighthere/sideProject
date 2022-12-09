@@ -3,6 +3,8 @@ package com.side.first_side.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.side.first_side.domain.Post;
@@ -40,13 +42,12 @@ public class PostService {
 
 	}
 
-	public List<PostResponse> getList() {
-		return postRepository.findAll().stream()
-									   .map(post -> PostResponse.builder()
-															    .id(post.getId())
-															    .title(post.getTitle())
-															    .content(post.getContent())
-															    .build())
+	public List<PostResponse> getList(int page) {
+		Pageable pageble = PageRequest.of(page, 5);
+		return postRepository.findAll(pageble).stream()
+									   .map(post -> new PostResponse(post))
 									   .collect(Collectors.toList());
+
+
 	}
 }

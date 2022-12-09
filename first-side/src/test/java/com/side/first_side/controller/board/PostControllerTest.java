@@ -146,26 +146,23 @@ class PostControllerTest {
 	@Test
 	@DisplayName("글 여러개 조회")
 	void test6() throws Exception {
-		//given
 		Post post1 = Post.builder()
-					    .title("첫번째")
-					    .content("첫번째 글")
-					    .build();
+						 .title("첫번쨰")
+						 .content("첫번째 글")
+						 .build();
 		postRepository.save(post1);
 
-
 		Post post2 = Post.builder()
-				.title("두번째")
-				.content("두번째 글")
-				.build();
+						 .title("두번째")
+						 .content("두번째 글")
+						 .build();
 		postRepository.save(post2);
 
-		//expected
 		mockMvc.perform(get("/posts")
 						.contentType(APPLICATION_JSON))
 			   .andExpect(status().isOk())
 			   .andExpect(jsonPath("$.length()",is(2)))
-			   .andExpect(jsonPath("$[0].title").value("첫번째"))
+			   .andExpect(jsonPath("$[0].title").value("첫번쨰"))
 			   .andExpect(jsonPath("$[0].content").value("첫번째 글"))
 			   .andExpect(jsonPath("$[1].title").value("두번째"))
 			   .andExpect(jsonPath("$[1].content").value("두번째 글"));
