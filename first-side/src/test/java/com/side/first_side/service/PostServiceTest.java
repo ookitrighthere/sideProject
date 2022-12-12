@@ -13,6 +13,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import com.side.first_side.domain.Post;
 import com.side.first_side.repository.PostRepository;
@@ -70,44 +73,9 @@ class PostServiceTest {
 		assertEquals("내용입니다", postResponse.getContent());
 	}
 
-//	@Test
-//	@DisplayName("글 여러개 조회")
-//	void test3() {
-		//given
-//		Post writePost1 = Post.builder()
-//							 .title("첫번쨰 글")
-//							 .content("첫번째 내용")
-//							 .build();
-//		postRepository.save(writePost1);
-//
-//		Post writePost2 = Post.builder()
-//							  .title("두번쨰 글")
-//							  .content("두번째 내용")
-//							  .build();
-//		postRepository.save(writePost2);
-
-//		postRepository.saveAll(List.of(
-//				 Post.builder()
-//				 	 .title("첫번쨰 글")
-//				 	 .content("첫번째 내용")
-//				 	 .build(),
-//				 Post.builder()
-//				 	 .title("두번쨰 글")
-//				 	 .content("두번째 내용")
-//				 	 .build()
-//		));
-//		//when
-//		List<PostResponse> postList = postService.getList(1);
-//
-//		//then
-//		assertEquals(2L, postList.size());
-//		assertEquals("두번째 내용", postList.get(1).getContent());
-//		assertEquals("첫번쨰 글", postList.get(0).getTitle());
-//	}
-
 	@Test
 	@DisplayName("글 1페이지 조회")
-	void test4() {
+	void test3() {
 	//given
 		List<Post> requestPost = IntStream.range(1, 31)
 										  .mapToObj(i -> Post.builder()
@@ -118,13 +86,15 @@ class PostServiceTest {
 		postRepository.saveAll(requestPost);
 
 	//when
-	List<PostResponse> posts = postService.getList(0);
+	Pageable pageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "id"));
+
+	List<PostResponse> posts = postService.getList(pageable);
 
 	//then
-	assertEquals(2L, posts.size());
+	assertEquals(5L, posts.size());
+	assertEquals("제목 30", posts.get(0).getTitle());
+	assertEquals("내용 27", posts.get(3).getContent());
 
 	}
-
-
 
 }

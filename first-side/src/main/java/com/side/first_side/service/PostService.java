@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.side.first_side.domain.Post;
@@ -42,12 +43,10 @@ public class PostService {
 
 	}
 
-	public List<PostResponse> getList(int page) {
-		Pageable pageble = PageRequest.of(page, 5);
-		return postRepository.findAll(pageble).stream()
+	public List<PostResponse> getList(Pageable pageable) {
+		return postRepository.findAll(pageable).stream()
 									   .map(post -> new PostResponse(post))
 									   .collect(Collectors.toList());
-
 
 	}
 }
