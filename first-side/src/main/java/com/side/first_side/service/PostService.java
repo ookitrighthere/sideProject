@@ -3,14 +3,12 @@ package com.side.first_side.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.side.first_side.domain.Post;
 import com.side.first_side.repository.PostRepository;
 import com.side.first_side.request.post.PostCreate;
+import com.side.first_side.request.post.PostSearch;
 import com.side.first_side.response.post.PostResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -43,10 +41,10 @@ public class PostService {
 
 	}
 
-	public List<PostResponse> getList(Pageable pageable) {
-		return postRepository.findAll(pageable).stream()
-									   .map(post -> new PostResponse(post))
-									   .collect(Collectors.toList());
+	public List<PostResponse> getList(PostSearch postSearch) {
+		return postRepository.getList(postSearch).stream()
+									   			 .map(post -> new PostResponse(post))
+									             .collect(Collectors.toList());
 
 	}
 }

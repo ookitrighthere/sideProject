@@ -20,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import com.side.first_side.domain.Post;
 import com.side.first_side.repository.PostRepository;
 import com.side.first_side.request.post.PostCreate;
+import com.side.first_side.request.post.PostSearch;
 import com.side.first_side.response.post.PostResponse;
 
 
@@ -77,7 +78,7 @@ class PostServiceTest {
 	@DisplayName("글 1페이지 조회")
 	void test3() {
 	//given
-		List<Post> requestPost = IntStream.range(1, 31)
+		List<Post> requestPost = IntStream.range(0,20)
 										  .mapToObj(i -> Post.builder()
 													     	  .title("제목 " + i)
 													          .content("내용 " + i)
@@ -86,14 +87,17 @@ class PostServiceTest {
 		postRepository.saveAll(requestPost);
 
 	//when
-	Pageable pageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "id"));
 
-	List<PostResponse> posts = postService.getList(pageable);
+	PostSearch postSearch = PostSearch.builder()
+									  .build();
+
+	List<PostResponse> posts = postService.getList(postSearch);
+
 
 	//then
 	assertEquals(5L, posts.size());
-	assertEquals("제목 30", posts.get(0).getTitle());
-	assertEquals("내용 27", posts.get(3).getContent());
+	assertEquals("제목 19", posts.get(0).getTitle());
+	assertEquals("내용 16", posts.get(3).getContent());
 
 	}
 

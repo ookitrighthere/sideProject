@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.side.first_side.request.post.PostCreate;
+import com.side.first_side.request.post.PostSearch;
 import com.side.first_side.response.post.PostResponse;
 import com.side.first_side.service.PostService;
 
@@ -36,7 +37,7 @@ public class PostController {
 	}
 
 	@GetMapping("/posts")
-	public List<PostResponse> getList(Pageable pageable) {
-		return postService.getList(pageable);
+	public List<PostResponse> getList(PostSearch postSearch) {
+		return postService.getList(postSearch);
 	}
 }
