@@ -3,6 +3,7 @@ package com.side.first_side.controller.board;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -213,9 +214,25 @@ class PostControllerTest {
 		String json = objectMapper.writeValueAsString(postEdit);
 		//expected
 		mockMvc.perform(patch("/posts/{postId}",post.getId())
-				.contentType(APPLICATION_JSON)
-				.content(json))
-		.andExpect(status().isOk())
-		.andDo(print());
+						.contentType(APPLICATION_JSON)
+						.content(json))
+			    .andExpect(status().isOk())
+				.andDo(print());
+	}
+
+	@Test
+	@DisplayName("게시글 삭제")
+	void test9() throws Exception {
+		//given
+		Post post = Post.builder()
+					   .title("게시글1")
+					   .content("게시글 삭제하기")
+					   .build();
+		postRepository.save(post);
+		//expected
+		mockMvc.perform(delete("/posts/{postId}", post.getId())
+						.contentType(APPLICATION_JSON))
+			   .andExpect(status().isOk())
+			   .andDo(print());
 	}
 }
