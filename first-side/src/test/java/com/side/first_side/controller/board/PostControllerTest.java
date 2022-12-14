@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -22,10 +23,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.side.first_side.domain.Post;
 import com.side.first_side.repository.PostRepository;
 import com.side.first_side.request.post.PostCreate;
+import com.side.first_side.request.post.PostEdit;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -151,6 +154,7 @@ class PostControllerTest {
 	@Test
 	@DisplayName("글 여러개 조회 5개씩")
 	void test6() throws Exception {
+		//given
 		List<Post> requestPost = IntStream.range(1, 20)
 										  .mapToObj(i -> Post.builder()
 													     	  .title("제목 " + i)
@@ -158,7 +162,7 @@ class PostControllerTest {
 													          .build())
 										  .collect(Collectors.toList());
 		postRepository.saveAll(requestPost);
-
+		//expected
 		mockMvc.perform(get("/posts?page=1&size=5")
 						.contentType(APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -172,6 +176,7 @@ class PostControllerTest {
 	@Test
 	@DisplayName("글 여러개 조회 10개씩")
 	void test7() throws Exception {
+		//given
 		List<Post> requestPost = IntStream.range(1, 21)
 										  .mapToObj(i -> Post.builder()
 															 .title("제목 " + i)
@@ -179,15 +184,38 @@ class PostControllerTest {
 															 .build())
 										   .collect(Collectors.toList());
 		postRepository.saveAll(requestPost);
-
+		//expected
 		mockMvc.perform(get("/posts?page=2&size=10")
-				.contentType(APPLICATION_JSON))
-		.andExpect(status().isOk())
-		.andExpect(jsonPath("$.length()",is(10)))
-		.andExpect(jsonPath("$[0].title").value("제목 10"))
-		.andExpect(jsonPath("$[4].title").value("제목 6"))
-		.andExpect(jsonPath("$[4].content").value("내용 6"))
-		.andDo(print());
+						.contentType(APPLICATION_JSON))
+			   .andExpect(status().isOk())
+			   .andExpect(jsonPath("$.length()",is(10)))
+			   .andExpect(jsonPath("$[0].title").value("제목 10"))
+			   .andExpect(jsonPath("$[4].title").value("제목 6"))
+			   .andExpect(jsonPath("$[4].content").value("내용 6"))
+			   .andDo(print());
 
+	}
+
+	@Test
+	@DisplayName("제목만 수정하기")
+	void test8() throws Exception {
+		//given\
+		Post post = Post.builder()
+				.title("글 수정 테스트")
+				.content("글수정 내용")
+				.build();
+		postRepository.save(post);
+
+		PostEdit postEdit = PostEdit.builder()
+				.title("글 수정하기")
+				.content("글수정 내용")
+				.build();
+		String json = objectMapper.writeValueAsString(postEdit);
+		//expected
+		mockMvc.perform(patch("/posts/{postId}",post.getId())
+				.contentType(APPLICATION_JSON)
+				.content(json))
+		.andExpect(status().isOk())
+		.andDo(print());
 	}
 }
