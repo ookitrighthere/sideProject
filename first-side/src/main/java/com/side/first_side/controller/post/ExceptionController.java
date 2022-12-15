@@ -1,6 +1,7 @@
 package com.side.first_side.controller.post;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.side.first_side.exception.PostException;
+import com.side.first_side.exception.PostNotFound;
 import com.side.first_side.response.error.ErrorResponse;
 
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +28,25 @@ public class ExceptionController {
 													.message("요청값을 확인해주세요.")
 													.build();
 		for(FieldError fieldError : e.getFieldErrors()) {
-			log.info("code = {} , message ={}, field={}" ,fieldError.getCode(),fieldError.getDefaultMessage(),fieldError.getField());
 			errorResponse.addValidation(fieldError.getField(), fieldError.getDefaultMessage());
 
 		}
 		return errorResponse;
+	}
+
+	@ResponseBody
+	@ExceptionHandler(PostNotFound.class)
+	public ResponseEntity<ErrorResponse> postException(PostException e) {
+		int statusCode = e.getStatusCode();
+
+		ErrorResponse errorResponse = ErrorResponse.builder()
+												   .code(String.valueOf(statusCode))
+												   .message(e.getMessage())
+												   .build();
+		ResponseEntity<ErrorResponse> response = ResponseEntity.status(statusCode)
+															   .body(errorResponse);
+		return response;
+
 	}
 
 }

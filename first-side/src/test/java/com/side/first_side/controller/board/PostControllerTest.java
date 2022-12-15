@@ -24,7 +24,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.side.first_side.domain.Post;
 import com.side.first_side.repository.PostRepository;
@@ -235,4 +234,50 @@ class PostControllerTest {
 			   .andExpect(status().isOk())
 			   .andDo(print());
 	}
+
+	@Test
+	@DisplayName("존재하지 않는 글 조회")
+	void test10() throws Exception {
+
+		//expected
+		mockMvc.perform(delete("/posts/{postId}", 2L)
+				.contentType(APPLICATION_JSON))
+		.andExpect(status().isNotFound())
+		.andDo(print());
+	}
+
+	@Test
+	@DisplayName("존재하지 않는 글 수정")
+	void test11() throws Exception {
+		//given
+		Post post = Post.builder()
+				.title("글 수정 테스트")
+				.content("글수정 내용")
+				.build();
+		postRepository.save(post);
+
+		PostEdit postEdit = PostEdit.builder()
+				.title("글 수정하기")
+				.content("글수정 내용")
+				.build();
+		String json = objectMapper.writeValueAsString(postEdit);
+
+		//expected
+		mockMvc.perform(patch("/posts/{postId}",post.getId()+2L)
+						.contentType(APPLICATION_JSON)
+						.content(json))
+			   .andExpect(status().isNotFound())
+			   .andDo(print());
+	}
+
+	@Test
+	@DisplayName("존재하지 않는 글 삭제")
+	void test12() throws Exception {
+		 //expected
+		mockMvc.perform(delete("/posts/{postId}",2L)
+				  .contentType(APPLICATION_JSON))
+			   .andExpect(status().isNotFound())
+			   .andDo(print());
+	}
+
 }

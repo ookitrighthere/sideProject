@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.side.first_side.domain.Post;
 import com.side.first_side.domain.PostEditor;
+import com.side.first_side.exception.PostNotFound;
 import com.side.first_side.repository.PostRepository;
 import com.side.first_side.request.post.PostCreate;
 import com.side.first_side.request.post.PostEdit;
@@ -33,7 +34,7 @@ public class PostService {
 
 	public PostResponse get(Long postId) {
 		Post post = postRepository.findById(postId)
-								  .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+								  .orElseThrow(() -> new PostNotFound());
 
 
 		return PostResponse.builder()
@@ -54,7 +55,7 @@ public class PostService {
 	@Transactional
 	public void edit(Long id, PostEdit postEdit) {
 		Post post = postRepository.findById(id)
-					  			  .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+					  			  .orElseThrow(() -> new PostNotFound());
 
 		PostEditor.PostEditorBuilder postEditorBuilder = post.toEditor();
 
@@ -68,7 +69,7 @@ public class PostService {
 
 	public void delete(Long id) {
 		Post post = postRepository.findById(id)
-								  .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다"));
+								  .orElseThrow(() -> new PostNotFound());
 		postRepository.delete(post);
 	}
 }
