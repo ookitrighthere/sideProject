@@ -1,6 +1,5 @@
 package com.side.first_side.domain;
 
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.side.first_side.exception.InvalidRequest;
 import com.side.first_side.exception.PostException;
 import com.side.first_side.exception.PostNotFound;
 import com.side.first_side.response.error.ErrorResponse;
@@ -35,18 +36,18 @@ public class ExceptionController {
 	}
 
 	@ResponseBody
-	@ExceptionHandler(PostNotFound.class)
+	@ExceptionHandler(PostException.class)
 	public ResponseEntity<ErrorResponse> postException(PostException e) {
 		int statusCode = e.getStatusCode();
-
 		ErrorResponse errorResponse = ErrorResponse.builder()
 												   .code(String.valueOf(statusCode))
 												   .message(e.getMessage())
+												   .validation(e.getValidation())
 												   .build();
+
 		ResponseEntity<ErrorResponse> response = ResponseEntity.status(statusCode)
 															   .body(errorResponse);
 		return response;
-
 	}
 
 }

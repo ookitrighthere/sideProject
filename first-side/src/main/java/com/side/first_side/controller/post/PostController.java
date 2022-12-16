@@ -30,6 +30,7 @@ public class PostController {
 
 	@PostMapping("/posts")
 	public void posts(@RequestBody @Valid PostCreate postCreate) {
+		postCreate.isVaild();
 		postService.write(postCreate);
 	}
 

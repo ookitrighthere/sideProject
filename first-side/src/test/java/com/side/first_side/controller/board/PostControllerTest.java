@@ -280,4 +280,21 @@ class PostControllerTest {
 			   .andDo(print());
 	}
 
+	@Test
+	@DisplayName("금지어 포함된 게시글 작성")
+	void test13() throws Exception {
+		PostCreate postCreate = PostCreate.builder()
+										  .title("바보입니까")
+										  .content("내용")
+										  .build();
+
+		String json = objectMapper.writeValueAsString(postCreate);
+		//expected
+		mockMvc.perform(post("/posts")
+						.contentType(APPLICATION_JSON)
+						.content(json))
+			   .andExpect(status().isBadRequest())
+			   .andDo(print());
+	}
+
 }
